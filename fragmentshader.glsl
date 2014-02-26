@@ -1,5 +1,6 @@
 #version 130
 
+uniform vec4 ambient;
 uniform vec3 light1Color;
 uniform vec3 light1Dir;
 uniform vec3 hVector1;
@@ -25,7 +26,7 @@ void main()
 	}
 	else
 	{
-		spec1 = pow(spec1, 5);
+		spec1 = pow(spec1, 10);
 	}
 	if (diff2 == 0.0)
 	{
@@ -33,14 +34,16 @@ void main()
 	}
 	else
 	{
-		spec2 = pow(spec2, 6);
+		spec2 = pow(spec2, 10);
 	}
-
-	vec3 scattered = (light1Color * diff1) + (light2Color * diff2);
+	
+	vec3 amb = vec3(ambient);
+	
+	vec3 scattered = ambient.rgb + (light1Color * diff1) + (light2Color * diff2);
 	vec3 reflected = light1Color * spec1 * 10;
 	vec3 reflected2 = light2Color * spec2 * 15;
 
-	vec3 finalColor = min( pass_color.rgb * scattered + reflected + reflected2, vec3(1.0));
+	vec3 finalColor = min(( pass_color.rgb * amb * scattered) + reflected + reflected2, vec3(1.0));
 
 	out_color = vec4(finalColor, pass_color.a);
 }

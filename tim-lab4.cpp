@@ -9,7 +9,8 @@ GLuint buffer[2];
 GLuint ebuffer;
 GLuint program;
 
-GLfloat pit,yaw,scalar=1;
+GLfloat pit = 1;
+GLfloat yaw = 1;
 
 
 GLfloat vertices[] = {	-5.0f,-5.0f,-5.0f,	//0 Left, Bottom, Far
@@ -99,22 +100,25 @@ void display(SDL_Window* window)
 	GLint tempLoc = glGetUniformLocation(program, "modelMatrix");	//Matrix that handles the transformations
 	glUniformMatrix4fv(tempLoc, 1 ,GL_FALSE,&trans[0][0]);
 	
-	GLfloat light1_dir[] = {20.0f, 20.0f, 20.0f};
+	GLfloat ambient[] = {0.5f, 0.5f, 0.5f, 1.0f};
+	GLfloat light1_dir[] = {-10.0f, -10.0f, -10.0f};	//Light pointing at top right near corner
 	GLfloat light1_color[] = {0.1f, 1.0f, 0.1f};
-	GLfloat light2_dir[] = {-20.0f, -20.0f, -20.0f};
+	GLfloat light2_dir[] = {10.0f, -10.0f, -10.0f};		//Light pointing at top left near corner
 	GLfloat light2_color[] = {0.1f, 0.1f, 1.0f};
 	
-	tempLoc = glGetUniformLocation(program,"light1Color");
+	tempLoc = glGetUniformLocation(program,"ambient");
+	glUniform4fv(tempLoc, 1, ambient);
+	tempLoc = glGetUniformLocation(program, "light1Color");
 	glUniform3fv(tempLoc, 1, light1_color);
-	tempLoc = glGetUniformLocation(program,"light1Dir");
+	tempLoc = glGetUniformLocation(program, "light1Dir");
 	glUniform3fv(tempLoc, 1, light1_dir);
-	tempLoc = glGetUniformLocation(program,"hVector1");
+	tempLoc = glGetUniformLocation(program, "hVector1");
 	glUniform3fv(tempLoc, 1, light1_dir);
-	tempLoc = glGetUniformLocation(program,"light2Color");
+	tempLoc = glGetUniformLocation(program, "light2Color");
 	glUniform3fv(tempLoc, 1, light2_color);
-	tempLoc = glGetUniformLocation(program,"light2Dir");
+	tempLoc = glGetUniformLocation(program, "light2Dir");
 	glUniform3fv(tempLoc, 1, light2_dir);
-	tempLoc = glGetUniformLocation(program,"hVector2");
+	tempLoc = glGetUniformLocation(program, "hVector2");
 	glUniform3fv(tempLoc, 1, light2_dir);
 
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, NULL);
@@ -177,5 +181,5 @@ void init()
 
 	//Enables vertex arrays to draw stuff
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);	
+	glEnableVertexAttribArray(1);
 }
