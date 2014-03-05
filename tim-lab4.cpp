@@ -11,7 +11,8 @@ GLuint program;
 
 GLfloat pit = 1;
 GLfloat yaw = 1;
-
+GLfloat x_cam = 0;
+GLfloat z_cam = 0;
 
 GLfloat vertices[] = {	-5.0f,-5.0f,-5.0f,	//0 Left, Bottom, Far
 				5.0f,-5.0f,-5.0f,		//1 Right, Bottom, Far
@@ -92,8 +93,8 @@ void display(SDL_Window* window)
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	//Clears the frame buffer
 
-	glm::mat4 trans;	//Matrix for transformations
-
+	glm::mat4 trans;	//Matrix for transformations 
+	
 	trans = glm::rotate(trans, pit, glm::vec3(1, 0, 0));	//rotate the cube around the x axis
 	trans = glm::rotate(trans, yaw, glm::vec3(0, 1, 0));	//rotate the cube arround the y axis
 	
@@ -140,12 +141,17 @@ void input(SDL_Window* window)
 			switch(event.key.keysym.sym)
 			{
 			case SDLK_ESCAPE: exit(0);
-			case SDLK_i: pit+=2; break;
-			case SDLK_k: pit-=2; break;
-			case SDLK_j: yaw+=2; break;
-			case SDLK_l: yaw-=2; break;
+			//case SDLK_i: pit+=2; break;
+			//case SDLK_k: pit-=2; break;
+			//case SDLK_j: yaw+=2; break;
+			//case SDLK_l: yaw-=2; break;
+			case SDLK_w: z_cam+=2; break;
+			case SDLK_s: z_cam-=2; break;
+			case SDLK_a: x_cam+=2; break;
+			case SDLK_d: x_cam-=2; break;
 			}
 		}
+		rotateCamera(x_cam, z_cam);
 	}
 }
 
