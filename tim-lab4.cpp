@@ -141,10 +141,6 @@ void input(SDL_Window* window)
 			switch(event.key.keysym.sym)
 			{
 			case SDLK_ESCAPE: exit(0);
-			//case SDLK_i: pit+=2; break;
-			//case SDLK_k: pit-=2; break;
-			//case SDLK_j: yaw+=2; break;
-			//case SDLK_l: yaw-=2; break;
 			case SDLK_w: y_cam+=2; break;
 			case SDLK_s: y_cam-=2; break;
 			case SDLK_a: x_cam+=2; break;
