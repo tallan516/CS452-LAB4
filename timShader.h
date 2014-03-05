@@ -51,13 +51,16 @@ void initShaders(GLuint program)
 	glUniformMatrix4fv(tempLoc, 1, GL_FALSE, &mainProjMatrix[0][0]);
 }
 
-void rotateCamera(float x, float z)
+void rotateCamera(float x, float y, GLuint program)
 {
 	glm::mat4 view;	//Matrix for the view of the camera
 	view = glm::lookAt(
-	glm::vec3(x, 0.0f, z),	//Camera position
+	glm::vec3(x, y, 50.0),	//Camera position
 	glm::vec3(0.0f, 0.0f, 0.0f),	//Camera target
 	glm::vec3(0.0f, 1.0f, 0.0f) );	//Up-vector (0, 1, 0) is normal view, (0, -1, 0) is upside down
+	
+	GLint tempLoc = glGetUniformLocation(program, "viewMatrix");	//The view matrix handles the camera movement
+	glUniformMatrix4fv(tempLoc, 1, GL_FALSE, &view[0][0]);
 }
 
 void compileShader(GLuint shader)

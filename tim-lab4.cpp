@@ -11,8 +11,8 @@ GLuint program;
 
 GLfloat pit = 1;
 GLfloat yaw = 1;
-GLfloat x_cam = 0;
-GLfloat z_cam = 0;
+GLfloat x_cam = 0.0f;
+GLfloat y_cam = 0.0f;
 
 GLfloat vertices[] = {	-5.0f,-5.0f,-5.0f,	//0 Left, Bottom, Far
 				5.0f,-5.0f,-5.0f,		//1 Right, Bottom, Far
@@ -145,13 +145,13 @@ void input(SDL_Window* window)
 			//case SDLK_k: pit-=2; break;
 			//case SDLK_j: yaw+=2; break;
 			//case SDLK_l: yaw-=2; break;
-			case SDLK_w: z_cam+=2; break;
-			case SDLK_s: z_cam-=2; break;
+			case SDLK_w: y_cam+=2; break;
+			case SDLK_s: y_cam-=2; break;
 			case SDLK_a: x_cam+=2; break;
 			case SDLK_d: x_cam-=2; break;
 			}
 		}
-		rotateCamera(x_cam, z_cam);
+		rotateCamera(x_cam, y_cam, program);
 	}
 }
 
