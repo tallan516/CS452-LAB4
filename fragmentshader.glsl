@@ -1,49 +1,56 @@
 #version 130
 
-uniform vec4 ambient;
-uniform vec3 light1Color;
-uniform vec3 light1Dir;
-uniform vec3 hVector1;
-uniform vec3 light2Color;
-uniform vec3 light2Dir;
-uniform vec3 hVector2;
+uniform vec4 Ambient;
+
+uniform vec3 LightColor1;
+uniform vec3 LightDirection1;
+uniform vec3 HalfVector1;
+
+uniform vec3 LightColor2;
+uniform vec3 LightDirection2;
+uniform vec3 HalfVector2;
 
 in vec4 pass_color;
-in vec3 in_position;
+in vec3 out_normal;
 
 out vec4 out_color;
 
 void main()
 {
-	float diff1 = max(0.0, dot(in_position, normalize(light1Dir)));
-	float spec1 = max(0.0, dot(in_position, normalize(hVector1)));
-	float diff2 = max(0.0, dot(in_position, normalize(light2Dir)));
-	float spec2 = max(0.0, dot(in_position, normalize(hVector2)));
-
-	if (diff1 == 0.0)
+	vec3 amb = vec3(Ambient);
+	
+	float diffuse1 = max(0.0, dot(normalize(out_normal), normalize(LightDirection1)));
+	float specular1 = max(0.0, dot(normalize(out_normal), normalize(HalfVector1)));
+	float diffuse2 = max(0.0, dot(normalize(out_normal), normalize(LightDirection2)));
+	float specular2 = max(0.0, dot(normalize(out_normal), normalize(HalfVector2)));
+	
+	//float diffuse1 = max(0.0, dot(out_normal, normalize(LightDirection1)));
+	//float specular1 = max(0.0, dot(out_normal, normalize(HalfVector1)));
+	//float diffuse2 = max(0.0, dot(out_normal, normalize(LightDirection2)));
+	//float specular2 = max(0.0, dot(out_normal, normalize(HalfVector2)));
+	
+	if (diffuse1 == 0.0)
 	{
-		spec1 = 0.0;
+		specular1 = 0.0;
 	}
 	else
 	{
-		spec1 = pow(spec1, 10);
+		specular1 = pow(specular1, 7);
 	}
-	if (diff2 == 0.0)
+	if (diffuse2 == 0.0)
 	{
-		spec2 = 0.0;
+		specular2 = 0.0;
 	}
 	else
 	{
-		spec2 = pow(spec2, 10);
+		specular2 = pow(specular2, 5);
 	}
 	
-	vec3 amb = vec3(ambient);
+	vec3 scatteredLight = Ambient.rgb + LightColor1 * diffuse1 + LightColor2 * diffuse2;
+	vec3 reflectedLight = LightColor1 * specular1 * 20;
+	vec3 reflectedLight2 = LightColor2 * specular2 * 5;
 	
-	vec3 scattered = ambient.rgb + (light1Color * diff1) + (light2Color * diff2);
-	vec3 reflected = light1Color * spec1 * 10;
-	vec3 reflected2 = light2Color * spec2 * 15;
-
-	vec3 finalColor = min(( pass_color.rgb * amb * scattered) + reflected + reflected2, vec3(1.0));
-
-	out_color = vec4(finalColor, pass_color.a);
+	vec3 final = min( (pass_color.rgb * amb) * scatteredLight + reflectedLight + reflectedLight2, vec3(1.0));
+	
+	out_color = vec4(final, pass_color.a);
 }

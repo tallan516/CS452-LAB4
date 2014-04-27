@@ -5,7 +5,7 @@
 using namespace std;
 
 GLuint abuffer;
-GLuint buffer[2];
+GLuint buffer[3];
 GLuint ebuffer;
 GLuint program;
 
@@ -13,6 +13,8 @@ GLfloat pit = 1;
 GLfloat yaw = 1;
 GLfloat x_cam = 0.0f;
 GLfloat y_cam = 0.0f;
+
+GLfloat norm = 1.0f / sqrt(3.0f);
 
 GLfloat vertices[] = {	-5.0f,-5.0f,-5.0f,	//0 Left, Bottom, Far
 				5.0f,-5.0f,-5.0f,		//1 Right, Bottom, Far
@@ -23,7 +25,6 @@ GLfloat vertices[] = {	-5.0f,-5.0f,-5.0f,	//0 Left, Bottom, Far
 				5.0f,5.0f,5.0f,		//6 Right, Top, Near
 				-5.0f,5.0f,5.0f	};	//7 Left, Top, Near
 
-
 				//R, B, G, A (transparency)
 GLfloat colors[] = {	1.0f,0.0f,0.0f,1.0f,		//0 Red
 				1.0f,1.0f,0.0f,1.0f,		//1 Purple
@@ -33,6 +34,15 @@ GLfloat colors[] = {	1.0f,0.0f,0.0f,1.0f,		//0 Red
 				1.0f,0.0f,1.0f,1.0f,		//5 Yellow
 				0.0f,0.0f,0.0f,1.0f,		//6 Black
 				1.0f,1.0f,1.0f,1.0f	};	//7 White
+
+GLfloat normals[] = {	-norm, -norm, -norm,
+				norm, -norm, -norm,
+				norm, -norm, norm,
+				-norm, -norm, norm,
+				-norm, norm, -norm,
+				norm, norm, -norm,
+				norm, norm, norm,
+				-norm, norm, norm		};
 
 GLubyte elems[] = {	2,3,0,1,2,0,		//Bottom
 				5,4,7,6,5,7,		//Top
@@ -84,7 +94,6 @@ int main(int argc, char **argv)
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-	glFrontFace(GL_CW);
 
 	return 0;
 }
@@ -102,26 +111,26 @@ void display(SDL_Window* window)
 	glUniformMatrix4fv(tempLoc, 1 ,GL_FALSE,&trans[0][0]);
 	
 	GLfloat ambient[] = {0.5f, 0.5f, 0.5f, 1.0f};
-	GLfloat light1_dir[] = {-10.0f, -10.0f, -10.0f};	//Light pointing at top right near corner
-	GLfloat light1_color[] = {0.1f, 1.0f, 0.1f};
-	GLfloat light2_dir[] = {10.0f, -10.0f, -10.0f};		//Light pointing at top left near corner
-	GLfloat light2_color[] = {0.1f, 0.1f, 1.0f};
+	GLfloat light1_dir[] = {20.0f, 20.0f, 20.0f};
+	GLfloat light1_color[] = {0.0f, 1.0f, 0.0f};
+	GLfloat light2_dir[] = {-20.0f, -20.0f, -20.0f};
+	GLfloat light2_color[] = {0.0f, 0.0f, 1.0f};
 	
-	tempLoc = glGetUniformLocation(program,"ambient");
-	glUniform4fv(tempLoc, 1, ambient);
-	tempLoc = glGetUniformLocation(program, "light1Color");
-	glUniform3fv(tempLoc, 1, light1_color);
-	tempLoc = glGetUniformLocation(program, "light1Dir");
-	glUniform3fv(tempLoc, 1, light1_dir);
-	tempLoc = glGetUniformLocation(program, "hVector1");
-	glUniform3fv(tempLoc, 1, light1_dir);
-	tempLoc = glGetUniformLocation(program, "light2Color");
-	glUniform3fv(tempLoc, 1, light2_color);
-	tempLoc = glGetUniformLocation(program, "light2Dir");
-	glUniform3fv(tempLoc, 1, light2_dir);
-	tempLoc = glGetUniformLocation(program, "hVector2");
-	glUniform3fv(tempLoc, 1, light2_dir);
-
+	tempLoc = glGetUniformLocation(program,"Ambient");
+	glUniform4fv(tempLoc,1,ambient);
+	tempLoc = glGetUniformLocation(program,"LightColor1");
+	glUniform3fv(tempLoc,1,light1_color);
+	tempLoc = glGetUniformLocation(program,"LightDirection1");
+	glUniform3fv(tempLoc,1,light1_dir);
+	tempLoc = glGetUniformLocation(program,"HalfVector1");
+	glUniform3fv(tempLoc,1,light1_dir);
+	tempLoc = glGetUniformLocation(program,"LightColor2");
+	glUniform3fv(tempLoc,1,light2_color);
+	tempLoc = glGetUniformLocation(program,"LightDirection2");
+	glUniform3fv(tempLoc,1,light2_dir);
+	tempLoc = glGetUniformLocation(program,"HalfVector2");
+	glUniform3fv(tempLoc,1,light2_dir);
+	
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, NULL);
 	glFlush();	//Makes sure all data is rendered as soon as possible
 	SDL_GL_SwapWindow(window);	//Updates the window
@@ -166,7 +175,7 @@ void init()
 	glGenVertexArrays(1, &abuffer);
 	glBindVertexArray(abuffer);
 
-	glGenBuffers(2, buffer);
+	glGenBuffers(3, buffer);
 
 	//Sets up pointers and stuff
 	glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
@@ -176,7 +185,11 @@ void init()
 	glBindBuffer(GL_ARRAY_BUFFER, buffer[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
+	
+	glBindBuffer(GL_ARRAY_BUFFER, buffer[2]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	
 	glGenBuffers(1, &ebuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elems), elems, GL_STATIC_DRAW);
@@ -184,4 +197,5 @@ void init()
 	//Enables vertex arrays to draw stuff
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 }

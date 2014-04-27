@@ -86,6 +86,7 @@ void attachShaders(GLuint shader1, GLuint shader2, GLuint program)
 	glAttachShader(program, shader2);	//Attaches shader2 to program
 	glBindAttribLocation(program, 0, "in_position");	//binds the location an attribute to a program
 	glBindAttribLocation(program, 1, "in_color");	//binds the location an attribute to a program
+	glBindAttribLocation(program, 2, "normal");
 
 	glLinkProgram(program);//links program to your program //weird
 
